@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Approaching Interviews and Solving Case Studies | Rethink Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   BRAND PALETTE - lifted from rethinksystems.in
+   ============================================================ */
+:root{
+  --ink:       #01061B;   /* Rethink navy: dark slides, body text on light  */
+  --paper:     #F3F6FF;   /* light slide background, navy-tinted off-white  */
+  --accent:    #3D5BF1;   /* Rethink blue on light slides                   */
+  --accent-dk: #84ADFF;   /* Rethink blue on navy slides                    */
+  --glow:      #3D5BF1;   /* the hero glow on the website                   */
+  --strong:    #0E7A55;   /* the "do this" colour                           */
+  --weak:      #B93A22;   /* the "not this" colour on light slides          */
+  --weak-dk:   #E07A5F;   /* the "not this" colour on navy slides           */
+
+  /* derived, no need to touch */
+  --muted:    #5B6480;
+  --hair:     rgba(1,6,27,.14);
+  --hair-dk:  rgba(237,237,237,.16);
+  --display:  'Figtree','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --body:     'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--ink);overflow:hidden}
+body{font-family:var(--body);-webkit-font-smoothing:antialiased}
+
+/* ---------- stage scaling: every slide is authored at 1280x720 ---------- */
+#deck{position:fixed;inset:0;display:grid;place-items:center}
+#stage{width:1280px;height:720px;position:relative;
+       transform:scale(var(--s,1));transform-origin:center center}
+.slide{position:absolute;inset:0;background:var(--paper);color:var(--ink);
+       padding:64px 88px 76px;display:none;flex-direction:column}
+.slide.on{display:flex}
+.slide.dark{background:var(--ink);color:var(--paper)}
+.slide.dark .rule{background:var(--hair-dk)}
+
+/* ---------- shared type ---------- */
+.eyebrow{font-size:15px;font-weight:600;color:var(--accent);letter-spacing:.01em;margin-bottom:14px}
+.dark .eyebrow{color:var(--accent-dk)}
+h1{font-family:var(--display);font-size:80px;line-height:1.02;font-weight:800;letter-spacing:-.025em}
+h2{font-family:var(--display);font-size:46px;line-height:1.08;font-weight:600;letter-spacing:-.02em}
+h3{font-family:var(--display);font-size:28px;line-height:1.15;font-weight:600;letter-spacing:-.01em}
+.rule{height:1px;background:var(--hair);margin:26px 0 30px;flex:none}
+.lede{font-size:26px;line-height:1.5;max-width:62ch;color:var(--muted)}
+.dark .lede{color:rgba(246,246,244,.62)}
+.body{font-size:24px;line-height:1.55;max-width:66ch}
+.fill{flex:1 1 auto;min-height:0}
+
+/* statement slide */
+.statement{font-family:var(--display);font-size:60px;line-height:1.12;font-weight:600;
+           letter-spacing:-.02em;max-width:20ch}
+.statement em{font-style:normal;color:var(--accent-dk)}
+.attrib{font-size:20px;color:rgba(246,246,244,.55);margin-top:34px}
+
+/* part divider */
+.divider{justify-content:center}
+.partnum{font-family:var(--display);font-size:210px;line-height:.8;font-weight:800;
+         color:transparent;-webkit-text-stroke:2px var(--accent-dk);letter-spacing:-.04em}
+.parttitle{font-family:var(--display);font-size:58px;font-weight:600;letter-spacing:-.025em;margin-top:18px}
+.partnote{font-size:22px;color:rgba(246,246,244,.6);margin-top:20px;max-width:46ch;line-height:1.5}
+
+/* numbered / bulleted lists */
+ol.steps{list-style:none;display:flex;flex-direction:column;gap:22px;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:46px 1fr;gap:20px;align-items:start}
+ol.steps li::before{content:counter(s);font-family:var(--display);font-size:30px;font-weight:600;
+                    color:var(--accent);line-height:1.1}
+.dark ol.steps li::before{color:var(--accent-dk)}
+ol.steps .t{font-size:25px;font-weight:600;line-height:1.3}
+ol.steps .d{font-size:21px;color:var(--muted);line-height:1.45;margin-top:5px;max-width:72ch}
+.dark ol.steps .d{color:rgba(246,246,244,.6)}
+
+ul.plain{list-style:none;display:flex;flex-direction:column;gap:17px}
+ul.plain li{font-size:24px;line-height:1.4;padding-left:26px;position:relative}
+ul.plain li::before{content:"";position:absolute;left:0;top:12px;width:9px;height:2px;background:var(--accent)}
+.dark ul.plain li::before{background:var(--accent-dk)}
+ul.plain li span{color:var(--muted);font-size:20px;display:block;margin-top:4px;line-height:1.45}
+.dark ul.plain li span{color:rgba(246,246,244,.6)}
+
+/* two-column compare: weak vs strong */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;min-height:0}
+.compare > div{padding:6px 40px}
+.compare > div:first-child{padding-left:0;border-right:1px solid var(--hair)}
+.dark .compare > div:first-child{border-right-color:var(--hair-dk)}
+.compare > div:last-child{padding-right:0}
+.tag{font-size:16px;font-weight:600;margin-bottom:16px}
+.tag.w{color:var(--weak)}
+.tag.s{color:var(--strong)}
+.quote{font-size:21px;line-height:1.5}
+.quote + .tag{margin-top:30px}
+.note{font-size:19px;color:var(--muted);line-height:1.45;margin-top:18px}
+
+/* attribute / concept grid */
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--hair);
+       border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);flex:1;min-height:0}
+.grid5 > div{background:var(--paper);padding:28px 22px;display:flex;flex-direction:column}
+.grid5 .n{font-family:var(--display);font-size:22px;font-weight:600;color:var(--accent);margin-bottom:12px}
+.grid5 .h{font-size:23px;font-weight:600;line-height:1.25}
+.grid5 .p{font-size:18px;color:var(--muted);line-height:1.45;margin-top:11px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px 54px;flex:1;min-height:0;align-content:start}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:30px 44px;flex:1;min-height:0;align-content:start}
+.cell .h{font-size:23px;font-weight:600;line-height:1.3;margin-bottom:9px}
+.cell .p{font-size:20px;color:var(--muted);line-height:1.5}
+.dark .cell .p{color:rgba(246,246,244,.6)}
+.cell .k{font-size:15px;font-weight:600;color:var(--accent);margin-bottom:9px}
+
+/* mapping table */
+table.map{width:100%;border-collapse:collapse;font-size:20px}
+table.map th{text-align:left;font-weight:600;font-size:15px;color:var(--accent);
+             padding:0 0 14px;border-bottom:1px solid var(--hair)}
+table.map td{padding:16px 0;border-bottom:1px solid var(--hair);vertical-align:top;line-height:1.35}
+table.map td:last-child{color:var(--muted);padding-left:40px}
+
+/* illustrations */
+.illo{width:100%;height:auto;display:block;overflow:visible}
+.illo .ln{stroke:currentColor;fill:none;stroke-width:2;opacity:.5;
+          stroke-linecap:round;stroke-linejoin:round}
+.illo .ln.faint{opacity:.22}
+.illo .hi{stroke:var(--accent);fill:none;stroke-width:2.5;
+          stroke-linecap:round;stroke-linejoin:round}
+.dark .illo .hi{stroke:var(--accent-dk)}
+.illo .hif{fill:var(--accent)}
+.dark .illo .hif{fill:var(--accent-dk)}
+.illo .sf{fill:currentColor;opacity:.07}
+.illo .lbl{fill:currentColor;font-family:var(--body);font-size:18px;font-weight:500}
+.illo .lbl.dim{opacity:.55;font-weight:400}
+.illo .lbl.sm{font-size:15px;opacity:.5;font-weight:400}
+.illo .wk{stroke:var(--weak-dk);fill:none;stroke-width:2.5;stroke-linecap:round}
+.illo .lblwk{fill:var(--weak-dk);font-family:var(--body);font-size:18px;font-weight:600}
+.illo .lblhi{fill:var(--accent);font-family:var(--body);font-size:18px;font-weight:600}
+.dark .illo .lblhi{fill:var(--accent-dk)}
+.illostage{flex:1;display:flex;align-items:center;min-height:0;padding:4px 0}
+
+/* footer */
+.foot{position:absolute;left:88px;right:88px;bottom:30px;display:flex;justify-content:space-between;
+      align-items:center;font-size:14px;color:var(--muted);letter-spacing:.01em}
+.dark .foot{color:rgba(246,246,244,.42)}
+.foot .mark{font-family:var(--display);font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.foot .mark i{font-style:normal;font-weight:400;letter-spacing:.16em;margin-left:4px}
+.dark .foot .mark{color:rgba(246,246,244,.8)}
+.slide.cover .foot,.slide.divider .foot{display:none}
+
+/* cover + part dividers: the rethinksystems.in hero, navy with the blue glow rising from the floor */
+.cover,.divider{
+  background:
+    radial-gradient(ellipse 84% 70% at 50% 116%, rgba(132,173,255,.85) 0%, rgba(61,91,241,.9) 22%, rgba(61,91,241,.42) 48%, rgba(1,6,27,0) 74%),
+    var(--ink);
+  color:var(--paper)}
+.cover{justify-content:flex-end;padding-bottom:88px;overflow:hidden}
+.cover::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(rgba(132,173,255,.42) 1.1px, transparent 1.6px);
+  background-size:22px 22px;
+  -webkit-mask-image:radial-gradient(ellipse 58% 66% at 50% 92%, #000 0%, rgba(0,0,0,.5) 45%, transparent 78%);
+          mask-image:radial-gradient(ellipse 58% 66% at 50% 92%, #000 0%, rgba(0,0,0,.5) 45%, transparent 78%)}
+.cover > *{position:relative}
+.cover .kicker{font-size:17px;font-weight:600;color:var(--accent-dk);margin-bottom:auto}
+.cover h1{max-width:17ch;margin-bottom:34px}
+.cover .by{font-size:23px;color:rgba(246,246,244,.72)}
+.cover .by b{font-weight:600;color:var(--paper)}
+.cover .accentbar{width:86px;height:5px;background:var(--accent-dk);margin-bottom:40px}
+
+/* progress + hud */
+#bar{position:fixed;left:0;top:0;height:3px;background:var(--accent-dk);width:0;z-index:40;transition:width .18s ease}
+#hud{position:fixed;right:18px;bottom:16px;z-index:40;font-family:var(--body);font-size:12px;
+     color:rgba(255,255,255,.45);display:flex;gap:14px;align-items:center;
+     opacity:0;transition:opacity .25s ease;pointer-events:none}
+#hud.show{opacity:1;pointer-events:auto}
+#hud button{background:none;border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.6);
+            font:inherit;padding:5px 11px;border-radius:2px;cursor:pointer}
+#hud button:hover{border-color:rgba(255,255,255,.5);color:#fff}
+#hud button:focus-visible{outline:2px solid var(--accent-dk);outline-offset:2px}
+
+@media print{
+  html,body{overflow:visible;background:#fff}
+  #deck,#stage{position:static;transform:none;width:auto;height:auto;box-shadow:none;display:block}
+  #bar,#hud{display:none}
+  .slide{display:flex !important;position:relative;width:1280px;height:720px;page-break-after:always;
+         break-after:page;box-shadow:none}
+  @page{size:1280px 720px;margin:0}
+}
+@media (prefers-reduced-motion:reduce){#bar{transition:none}}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="deck"><div id="stage">
+
+<!-- 1 COVER -->
+<section class="slide cover on">
+  <div class="kicker">Mastering Product Management &middot; Session 03</div>
+  <div class="accentbar"></div>
+  <h1>Approaching interviews and solving case studies</h1>
+  <div class="by">with <b>Shravan Tickoo</b>, Rethink Systems</div>
+</section>
+
+<!-- 2 GOAL -->
+<section class="slide">
+  <div class="eyebrow">Why this session exists</div>
+  <h2>Actionable steps that raise your odds of landing the right PM job</h2>
+  <div class="rule"></div>
+  <p class="lede">Not the job with the best title. The one where the problem, the product and the people are worth your next three years. Everything here comes from both sides of the table: hiring PMs, and being hired.</p>
+  <div class="fill"></div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 3 ROADMAP -->
+<section class="slide">
+  <div class="eyebrow">What we cover</div>
+  <h2>Five parts</h2>
+  <div class="rule"></div>
+  <ol class="steps">
+    <li><div><div class="t">What hiring managers are actually looking for</div><div class="d">The five attributes every PM interview is secretly scoring</div></div></li>
+    <li><div><div class="t">Getting real PM experience before the title</div><div class="d">Why business school is the wrong answer and your current company is the right one</div></div></li>
+    <li><div><div class="t">The pre-interview assignment</div><div class="d">The single highest-leverage thing most candidates skip</div></div></li>
+    <li><div><div class="t">The resume</div><div class="d">Five sections, rewritten so facts do the work</div></div></li>
+    <li><div><div class="t">Research, story and the interview itself</div><div class="d">Reading the interviewer, and the categories of questions you will face</div></div></li>
+  </ol>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 4 PART 1 DIVIDER -->
+<section class="slide dark divider">
+  <div class="partnum">01</div>
+  <div class="parttitle">What hiring managers<br>are looking for</div>
+  <div class="partnote">Before you fix your resume, understand what the resume is being measured against.</div>
+</section>
+
+<!-- 5 THREE LESSONS -->
+<section class="slide">
+  <div class="eyebrow">From hiring, and from being hired</div>
+  <h2>Three lessons worth internalising</h2>
+  <div class="rule"></div>
+  <ol class="steps">
+    <li><div><div class="t">Credibility built before you walk through the door is priceless</div><div class="d">The interviewer who spent thirty minutes on your writing is not interviewing you. They are confirming a decision they already made.</div></div></li>
+    <li><div><div class="t">PM roles usually require prior PM experience</div><div class="d">The catch-22. You cannot get the job without the experience, and you cannot get the experience without the job. Part 02 is how you break it.</div></div></li>
+    <li><div><div class="t">Job hunting makes you sharper</div><div class="d">Applying, researching and interviewing is itself a product education. You come out of the process a better thinker than you went in.</div></div></li>
+  </ol>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 6 CREDIBILITY ILLUSTRATION -->
+<section class="slide dark">
+  <div class="eyebrow">Lesson one, drawn out</div>
+  <h2>What is in front of them the night before</h2>
+  <div class="rule"></div>
+  <div class="illostage">
+  <svg class="illo" viewBox="0 0 1104 268" role="img"
+       aria-label="Left: the interviewer has only a resume, and is unimpressed. Right: the interviewer has the resume plus months of published work, and is already convinced.">
+    <line class="ln faint" x1="552" y1="4" x2="552" y2="264"/>
+
+    <!-- ---------- LEFT ---------- -->
+    <text class="lbl sm" x="16" y="18">Candidate A</text>
+    <rect class="ln" x="16" y="44" width="128" height="164" rx="3"/>
+    <line class="ln faint" x1="40" y1="80"  x2="120" y2="80"/>
+    <line class="ln faint" x1="40" y1="104" x2="120" y2="104"/>
+    <line class="ln faint" x1="40" y1="128" x2="120" y2="128"/>
+    <line class="ln faint" x1="40" y1="152" x2="96"  y2="152"/>
+    <text class="lbl dim" x="16" y="240">One resume</text>
+
+    <rect class="ln" x="222" y="72" width="256" height="86" rx="5"/>
+    <path class="ln" d="M200 126 l22 -12 v28 z"/>
+    <text class="lbl dim" x="246" y="106">&ldquo;Another interview.</text>
+    <text class="lbl dim" x="246" y="134">Let us see.&rdquo;</text>
+
+    <!-- ---------- RIGHT ---------- -->
+    <text class="lblhi" x="596" y="18">Candidate B</text>
+    <!-- stack behind -->
+    <rect class="ln faint" x="640" y="36" width="128" height="164" rx="3"/>
+    <rect class="ln faint" x="624" y="44" width="128" height="164" rx="3"/>
+    <rect class="hi" x="596" y="52" width="128" height="164" rx="3"/>
+    <line class="ln" x1="620" y1="88"  x2="700" y2="88"/>
+    <line class="ln" x1="620" y1="112" x2="700" y2="112"/>
+    <line class="ln" x1="620" y1="136" x2="700" y2="136"/>
+    <line class="ln" x1="620" y1="160" x2="676" y2="160"/>
+    <text class="lbl dim" x="596" y="248">The same resume, plus six months</text>
+    <text class="lbl dim" x="596" y="268">of writing they can actually read</text>
+
+    <rect class="hi" x="826" y="60" width="278" height="112" rx="5"/>
+    <path class="hi" d="M804 126 l22 -12 v28 z"/>
+    <text class="lbl" x="850" y="96">&ldquo;Thirty minutes on</text>
+    <text class="lbl" x="850" y="124">his writing.</text>
+    <text class="lbl" x="850" y="152">He gets it.&rdquo;</text>
+  </svg>
+  </div>
+  <p class="note" style="opacity:.78;max-width:80ch;margin-top:2px">
+    The second conversation is not an evaluation. It is a confirmation. Credibility built before you walk through the door is priceless, and it is built over months, not in the week the opening appears.</p>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 6b THE LOOP -->
+<section class="slide">
+  <div class="eyebrow">Lesson three, drawn out</div>
+  <h2>The search is not dead time. It is the education.</h2>
+  <div class="rule"></div>
+  <div class="illostage">
+  <svg class="illo" viewBox="0 0 1104 252" role="img"
+       aria-label="A loop between applying, researching and interviewing, with each lap producing a sharper candidate.">
+    <!-- three nodes -->
+    <rect class="ln" x="30" y="82" width="200" height="72" rx="4"/>
+    <text class="lbl" x="70" y="124">Applying</text>
+
+    <rect class="ln" x="330" y="82" width="200" height="72" rx="4"/>
+    <text class="lbl" x="358" y="124">Researching</text>
+
+    <rect class="ln" x="630" y="82" width="200" height="72" rx="4"/>
+    <text class="lbl" x="662" y="124">Interviewing</text>
+
+    <!-- arrows between -->
+    <path class="ln" d="M230 118 H318"/>
+    <path class="hif" d="M318 118 l-12 -6 v12 z"/>
+    <path class="ln" d="M530 118 H618"/>
+    <path class="hif" d="M618 118 l-12 -6 v12 z"/>
+
+    <!-- return arc -->
+    <path class="ln" d="M730 154 q0 62 -300 62 q-300 0 -300 -62"/>
+    <path class="hif" d="M130 154 l-6 12 h12 z"/>
+    <text class="lbl sm" x="392" y="238">every rejection feeds the next lap</text>
+
+    <!-- output -->
+    <path class="hi" d="M830 118 H942"/>
+    <path class="hif" d="M942 118 l-12 -6 v12 z"/>
+    <rect class="hi" x="950" y="76" width="154" height="84" rx="4"/>
+    <text class="lblhi" x="978" y="112">You,</text>
+    <text class="lblhi" x="978" y="136">sharper</text>
+  </svg>
+  </div>
+  <p class="note" style="max-width:80ch;margin-top:6px">
+    Every company you research is a free product teardown. Every interview is a live case study with a domain expert. Candidates who treat the search as overhead learn nothing from it. Candidates who treat it as practice arrive at the offer already better than they were.</p>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 7 WHAT DOES A PM DO -->
+<section class="slide">
+  <div class="eyebrow">Take a step back</div>
+  <h2>Every interview question is a proxy for one of five attributes</h2>
+  <div class="rule"></div>
+  <div class="grid5">
+    <div><div class="n">01</div><div class="h">Has product sense</div><div class="p">Usually makes the right call, at the macro and the micro level</div></div>
+    <div><div class="n">02</div><div class="h">Is smart</div><div class="p">Structures an unfamiliar problem without being handed a framework</div></div>
+    <div><div class="n">03</div><div class="h">Gets things done</div><div class="p">Ships. Has a track record of things that actually reached users</div></div>
+    <div><div class="n">04</div><div class="h">Is a culture fit</div><div class="p">Works the way this specific team works, not the way PMs work in general</div></div>
+    <div><div class="n">05</div><div class="h">Has technical skills</div><div class="p">Domain expertise plus a real understanding of the technology</div></div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 8 PRODUCT SENSE -->
+<section class="slide dark">
+  <div class="eyebrow">Attribute one, defined</div>
+  <div class="fill" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="statement">Product sense is the ability to usually make the right product decision.</div>
+    <div class="attrib">Both macro and micro. Note the word <em>usually</em>. Nobody is scoring you on being right every time.</div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 9 TECHNICAL SKILLS -->
+<section class="slide">
+  <div class="eyebrow">Attribute five, defined</div>
+  <h2>Technical skills = domain expertise + understanding the technology</h2>
+  <div class="rule"></div>
+  <div class="grid2">
+    <div class="cell"><div class="k">What is being tested</div><div class="h">Can you explain the basics of the technologies your product depends on?</div><div class="p">Not write the code. Explain the system: what calls what, what breaks, what it costs, why a change is a week and not a day.</div></div>
+    <div class="cell"><div class="k">Why it carries weight</div><div class="h">Engineering usually has a large say in the hiring decision</div><div class="p">In most PM loops there is an engineering interviewer with real veto power. They are not checking your syntax. They are checking whether working with you will be expensive.</div></div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 10 BAD IDEA -->
+<section class="slide dark">
+  <div class="eyebrow">The answer that ends the loop</div>
+  <div class="fill" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="statement">&ldquo;I am a business person. Next question, please.&rdquo;</div>
+    <div class="attrib">As a PM, technology <em>is</em> your business. This answer reads as an unwillingness to learn, and it travels back to the panel.</div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 11 PART 2 DIVIDER -->
+<section class="slide dark divider">
+  <div class="partnum">02</div>
+  <div class="parttitle">Getting real PM experience<br>before you have the title</div>
+  <div class="partnote">How to break the catch-22 without spending two years and twenty lakhs on it.</div>
+</section>
+
+<!-- 12 BE SURE FIRST -->
+<section class="slide">
+  <div class="eyebrow">Before anything else</div>
+  <h2>Be sure you will actually enjoy the job</h2>
+  <div class="rule"></div>
+  <div class="compare">
+    <div>
+      <div class="tag w">What people imagine the role is</div>
+      <ul class="plain" style="gap:11px">
+        <li>The face of the product</li>
+        <li>Highly compensated, clearly a leader</li>
+        <li>Visionary, future CEO</li>
+        <li>Finally uses the business degree</li>
+      </ul>
+    </div>
+    <div>
+      <div class="tag s">What most weeks actually contain</div>
+      <ul class="plain" style="gap:11px">
+        <li>Responsibility without authority</li>
+        <li>Engineers reassigned mid-project</li>
+        <li>A difficult exec review you did not cause</li>
+        <li>A sales-driven roadmap and angry customers</li>
+      </ul>
+    </div>
+  </div>
+  <p class="note" style="margin-top:26px">Talk to at least eight product managers about the good and, more usefully, the bad. If the bad still sounds like a fair trade, continue.</p>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 13 WRONG ANSWER -->
+<section class="slide dark">
+  <div class="eyebrow">Where should you go to become a PM?</div>
+  <h2>Wrong answer: business school</h2>
+  <div class="rule"></div>
+  <div class="illostage">
+  <svg class="illo" viewBox="0 0 1104 250" role="img"
+       aria-label="Left: an escalator that carries you up by itself, marked as not what happens. Right: a door with a knob that opens, with the last stretch walked on your own.">
+    <line class="ln faint" x1="552" y1="4" x2="552" y2="246"/>
+
+    <!-- ---------- LEFT: the escalator myth ---------- -->
+    <text class="lblwk" x="16" y="18">The expectation: an escalator</text>
+    <!-- staircase -->
+    <path class="ln" d="M40 216 h60 v-34 h60 v-34 h60 v-34 h60 v-34 h60"/>
+    <line class="ln faint" x1="40" y1="216" x2="340" y2="216"/>
+    <!-- automatic travel arrow -->
+    <path class="wk" d="M78 190 L316 68"/>
+    <path class="wk" style="fill:var(--weak-dk);stroke:none" d="M316 68 L305.4 82.4 L298.2 68.2 Z"/>
+    <text class="lblwk" x="104" y="248">carries you the whole way</text>
+
+    <!-- ---------- RIGHT: the door-knob reality ---------- -->
+    <text class="lblhi" x="596" y="18">The reality: a door-knob</text>
+    <!-- frame -->
+    <rect class="ln" x="700" y="40" width="164" height="196" rx="2"/>
+    <!-- door swung open -->
+    <path class="hi" d="M700 40 L640 74 L640 202 L700 236"/>
+    <circle class="hi" cx="676" cy="140" r="7"/>
+    <!-- opening -->
+    <rect class="sf" x="700" y="40" width="164" height="196"/>
+    <!-- arrow through the door, stopping short -->
+    <path class="ln" d="M900 138 H790" style="stroke-dasharray:8 8"/>
+    <path class="hif" d="M790 138 l14 -7 v14 z"/>
+    <text class="lbl" x="908" y="132">it opens</text>
+    <text class="lbl dim" x="908" y="162">you walk</text>
+    <text class="lbl dim" x="908" y="186">the rest</text>
+  </svg>
+  </div>
+  <p class="note" style="opacity:.78;max-width:80ch;margin-top:2px">
+    The &ldquo;MBA first, PM next&rdquo; mindset is a deferred life plan. A degree is not an escalator that carries you up. It is a door-knob: it opens a door you still have to walk through on your own legs. Before you commit two years and the fees, confirm your expectations are realistic.</p>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 14 RIGHT ANSWER -->
+<section class="slide">
+  <div class="eyebrow">Where should you go to become a PM?</div>
+  <h2>Right answer: your current company</h2>
+  <div class="rule"></div>
+  <p class="body">Get hands-on PM experience where you already have context, credibility and access. You are after the skills and the perspective that make people take you seriously when you apply. The observation that makes this work: PMs are busy, and can always use help from a capable colleague.</p>
+  <div class="fill"></div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 15 FOUR MOVES -->
+<section class="slide">
+  <div class="eyebrow">Four moves, starting Monday</div>
+  <h2>How to do it from where you sit</h2>
+  <div class="rule"></div>
+  <ol class="steps">
+    <li><div><div class="t">Approach your PM and offer to help</div><div class="d">Be specific: what you will do, for how long, and what the goal is. A vague offer to help is easy to decline.</div></div></li>
+    <li><div><div class="t">Shadow PMs in their core team meetings</div><div class="d">You are learning how decisions get made and how disagreement gets resolved. That is the part no course teaches.</div></div></li>
+    <li><div><div class="t">Become the biggest source of ideas for the product you already work on</div><div class="d">Then implement them. Ideas alone make you a commentator. Shipped ideas make you hard to ignore.</div></div></li>
+    <li><div><div class="t">Take a good PM class</div><div class="d">Especially useful for picking up the vocabulary you will be expected to speak fluently in interviews.</div></div></li>
+  </ol>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 16 THE TEST -->
+<section class="slide dark">
+  <div class="eyebrow">The objection everyone has</div>
+  <div class="fill" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="statement">&ldquo;This is too much work. Is there an easier way?&rdquo;</div>
+    <div class="attrib">Being resourceful under constraint is the job. Treat this as the first test of your suitability. Give it six months, then put the experience at the top of your search.</div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 17 WRITE -->
+<section class="slide">
+  <div class="eyebrow">The credibility play</div>
+  <h2>Write about the practice of product management</h2>
+  <div class="rule"></div>
+  <p class="body" style="margin-bottom:28px">Compared with other fields there is remarkably little written about how the job is actually done. That gap is your opening. &ldquo;I have nothing to write about&rdquo; is almost never true:</p>
+  <div class="grid2" style="gap:18px 54px">
+    <div class="cell"><div class="h">How to manage a launch</div></div>
+    <div class="cell"><div class="h">How to run an effective exec review</div></div>
+    <div class="cell"><div class="h">Five mistakes I made and what I learned</div></div>
+    <div class="cell"><div class="h">An essential reading list for PMs</div></div>
+    <div class="cell"><div class="h">How to work with sales, engineering, design</div></div>
+    <div class="cell"><div class="h">A product you love, and how you would improve it</div></div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 18 PART 3 DIVIDER -->
+<section class="slide dark divider">
+  <div class="partnum">03</div>
+  <div class="parttitle">The pre-interview<br>assignment</div>
+  <div class="partnote">The highest-leverage thing most candidates never do.</div>
+</section>
+
+<!-- 19 WHY ASSIGNMENTS WORK -->
+<section class="slide">
+  <div class="eyebrow">Why bother</div>
+  <h2>A resume is your highlights. An assignment is your thinking.</h2>
+  <div class="rule"></div>
+  <div class="compare">
+    <div>
+      <div class="tag w">What a resume can show</div>
+      <div class="quote">Your most featured highlights. Where you worked, what shipped, which numbers moved. Real, but curated, and it says very little about the acumen you hold.</div>
+    </div>
+    <div>
+      <div class="tag s">What an assignment shows</div>
+      <div class="quote">How you break down a problem you were not briefed on. Two signals land at once: you cared enough to do unpaid work, and the interviewer can see you think.</div>
+      <p class="note">More than background, a good product company is hiring a good thinker.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 20 SIDE EFFECTS -->
+<section class="slide">
+  <div class="eyebrow">The work does three jobs at once</div>
+  <h2>You are preparing while you are impressing</h2>
+  <div class="rule"></div>
+  <div class="grid3">
+    <div class="cell"><div class="k">Company</div><div class="h">You learn what they actually do</div><div class="p">Not the careers page version. What the product is, who uses it, where the money comes from.</div></div>
+    <div class="cell"><div class="k">Product</div><div class="h">You learn where they are heading</div><div class="p">Recent releases tell you the bets. Swiggy Super tells you more about the roadmap than any job description will.</div></div>
+    <div class="cell"><div class="k">Role</div><div class="h">You learn what they are hiring for</div><div class="p">Read the LinkedIn profiles of their current PMs. If most came from design, design is the emphasis. Prepare accordingly.</div></div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 21 GROWW WALKTHROUGH -->
+<section class="slide">
+  <div class="eyebrow">A worked example</div>
+  <h2>Groww has a PM opening. Here is the hour you spend.</h2>
+  <div class="rule"></div>
+  <ol class="steps">
+    <li><div><div class="t">Open the app and use it properly</div><div class="d">Groww lets users make investment choices. Go through the flow the way a first-time investor would, not the way an analyst would.</div></div></li>
+    <li><div><div class="t">Understand how investing actually happens there</div><div class="d">Onboarding, KYC, discovery, the decision moment, the follow-through after you have put money in.</div></div></li>
+    <li><div><div class="t">Map it against real people you know</div><div class="d">Your own investing pattern, and the pattern of the people around you. The gaps show up in the distance between the two.</div></div></li>
+    <li><div><div class="t">Pick one gap and write the assignment</div><div class="d">Trust, customer service and expert advice are three places worth digging. Choose one problem statement, not four.</div></div></li>
+  </ol>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 22 PART 4 DIVIDER -->
+<section class="slide dark divider">
+  <div class="partnum">04</div>
+  <div class="parttitle">The resume</div>
+  <div class="partnote">Five sections. Facts do the work, not adjectives.</div>
+</section>
+
+<!-- 23 RESUME PRINCIPLE -->
+<section class="slide dark">
+  <div class="eyebrow">The one rule underneath all five sections</div>
+  <div class="fill" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="statement">Impress with facts, not with big words that make you look important.</div>
+    <div class="attrib">Because they do not. PMs are judged on actionable points, and the worst thing you can hand a hiring manager is a resume full of non-actionable jargon. The summary drives a go or no-go decision in under a minute: keep it short and real.</div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 24 SECTION 1 OBJECTIVE -->
+<section class="slide">
+  <div class="eyebrow">Section 01</div>
+  <h2>Objective</h2>
+  <div class="rule"></div>
+  <div class="compare">
+    <div>
+      <div class="tag w">Weak</div>
+      <div class="quote">A visionary product management executive with vast strategic experience driving operational efficiencies at Fortune 100 enterprises with C-level visibility.</div>
+      <p class="note">Every word is doing PR. Nothing is verifiable, so nothing is memorable.</p>
+    </div>
+    <div>
+      <div class="tag s">Strong</div>
+      <div class="quote">Five years building enterprise monitoring products for IBM, HP and Applied Materials. Those products generated more than 200 million in revenue.</div>
+      <p class="note">Same length. Every claim checkable.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 25 OBJECTIVE FOR FRESHERS -->
+<section class="slide">
+  <div class="eyebrow">Section 01, if you have no PM experience yet</div>
+  <h2>The same rule still applies</h2>
+  <div class="rule"></div>
+  <div class="quote" style="font-size:27px;line-height:1.5;max-width:34ch;border-left:3px solid var(--strong);padding-left:30px">Final-year student interested in product management and building user-centric products. Led the college fest committee across three online events with 500+ participants, and drove 20 lakhs in revenue.</div>
+  <p class="note" style="max-width:60ch;margin-top:30px">You have no PM title. You do have scope, constraint and a number. That is the whole recipe. Enthusiasm is not a qualification, but what you did with your enthusiasm is.</p>
+  <div class="fill"></div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 26 SECTION 2 EXPERIENCE -->
+<section class="slide">
+  <div class="eyebrow">Section 02</div>
+  <h2>Experience</h2>
+  <div class="rule"></div>
+  <div class="compare">
+    <div>
+      <div class="tag w">The trap</div>
+      <div class="quote">Writing everything about the product and everything you personally did on it.</div>
+      <p class="note">Three bullets maximum per role. Last three or four roles only. Always speak to user impact, never to the intermediate changes that produced it.</p>
+    </div>
+    <div>
+      <div class="tag s">What each bullet answers</div>
+      <ul class="plain" style="gap:11px;margin-bottom:22px">
+        <li>What was the product</li>
+        <li>Why was it special, meaning what was the impact</li>
+        <li>What key challenge did you overcome</li>
+      </ul>
+      <div class="quote" style="font-size:19px;border-left:3px solid var(--strong);padding-left:22px">Led the live class platform at BYJU'S. Drove personalised 1:25 classes to over 100k students a day. Built the strategy for student-to-student and student-to-tutor relationships at scale.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 27 SECTION 3 ACHIEVEMENTS -->
+<section class="slide">
+  <div class="eyebrow">Section 03</div>
+  <h2>Achievements</h2>
+  <div class="rule"></div>
+  <p class="body" style="margin-bottom:30px">This section has one job: plant hooks that make the interviewer curious enough to ask. A good hook becomes a conversation you control, in an hour where most things are being asked of you.</p>
+  <div class="compare" style="flex:0">
+    <div>
+      <div class="tag s">With experience</div>
+      <div class="quote">Awarded a 3,000 dollar bounty by Uber for finding bugs in their app.</div>
+    </div>
+    <div>
+      <div class="tag s">Without experience</div>
+      <div class="quote">Raised 50 lakhs of funding in college for an event. Or: among the first five teams to build [thing] on campus.</div>
+    </div>
+  </div>
+  <div class="fill"></div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 28 SECTION 4 EDUCATION -->
+<section class="slide">
+  <div class="eyebrow">Section 04</div>
+  <h2>Education</h2>
+  <div class="rule"></div>
+  <div class="compare">
+    <div>
+      <div class="tag w">Weak</div>
+      <div class="quote">MBA, [school], 2012 to 2016, GPA 3.1<br>BTech, IIT Roorkee, GPA 8.5</div>
+      <p class="note">A GPA nobody asked for, doing nothing for you. If the number is not remarkable, it is just a number that invites a question.</p>
+    </div>
+    <div>
+      <div class="tag s">Strong</div>
+      <div class="quote">MBA, [school], 2012 to 2016<br>Pursued product management coursework. 4.0 across all marketing classes. Excelled in UX and leadership. President, [school council].</div>
+      <p class="note">Same degree, reframed around relevance and evidence of initiative.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 29 SECTION 5 SKILLS -->
+<section class="slide">
+  <div class="eyebrow">Section 05</div>
+  <h2>Skills</h2>
+  <div class="rule"></div>
+  <div class="compare">
+    <div>
+      <div class="tag w">Weak</div>
+      <div class="quote">Leadership, communication, collaboration, creativity, listening, UX, strategy, feature definition, forecasting, marketing, ideation, business skills, PowerPoint, MS Project, Agile, research...</div>
+      <p class="note">A list anyone could claim, so nobody believes any of it.</p>
+    </div>
+    <div>
+      <div class="tag s">Strong</div>
+      <div class="quote">Improved UX measures by 25% through more user feedback collection and faster iteration. Launched three products in two years for a 22% revenue gain. Ran four marketing campaigns at 120% ROI.</div>
+      <p class="note">Skills should always showcase the value you brought.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 30 PART 5 DIVIDER -->
+<section class="slide dark divider">
+  <div class="partnum">05</div>
+  <div class="parttitle">Research, story<br>and the interview</div>
+  <div class="partnote">Walk in knowing the industry, the company, and the person sitting across from you.</div>
+</section>
+
+<!-- 31 THREE KINDS OF RESEARCH -->
+<section class="slide">
+  <div class="eyebrow">Research well before you apply</div>
+  <h2>Three kinds, in this order</h2>
+  <div class="rule"></div>
+  <div class="grid3">
+    <div class="cell"><div class="k">01 Industry</div><div class="h">Understand the problem the whole industry is trying to solve</div><div class="p">Edtech is trying to solve access to education through quality teaching online and strong pedagogy. Learn the different product models inside that, best done by deconstructing BYJU'S, Vedantu and their peers.</div></div>
+    <div class="cell"><div class="k">02 Company</div><div class="h">Understand what this company does and how the product got here</div><div class="p">Deconstruct their product. Read the funding coverage, the founder pieces, the YourStory writeups. If you can use the service, do, because first-hand use is where the gaps become obvious.</div></div>
+    <div class="cell"><div class="k">03 Interviewer</div><div class="h">Understand the person who will be asking</div><div class="p">Their profile is a synopsis of how the interview will go. This is the step almost nobody does, and it is the one with the highest return.</div></div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 32 INTERVIEWER RESEARCH WORKED -->
+<section class="slide">
+  <div class="eyebrow">Worked example: reading an interviewer profile</div>
+  <h2>Four lines on LinkedIn, four things you can predict</h2>
+  <div class="rule"></div>
+  <table class="map">
+    <tr><th style="width:46%">What the profile says</th><th>What you can reasonably infer</th></tr>
+    <tr><td>Built edtech products, specifically for kids</td><td>Heavily design-focused. Expect questions about user empathy and interface decisions.</td></tr>
+    <tr><td>Handled P&amp;L at Eureka</td><td>Understands business models. Expect commercial framing and unit economics.</td></tr>
+    <tr><td>Built ML products</td><td>Comfortable with technology. Expect at least a basic technical probe.</td></tr>
+    <tr><td>Ran analytics at Flipkart</td><td>Data-led. Expect to be asked how you would measure it.</td></tr>
+  </table>
+  <div class="fill"></div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 33 INFERENCE TO QUESTION -->
+<section class="slide">
+  <div class="eyebrow">Turning the inference into preparation</div>
+  <h2>Each background produces a predictable question type</h2>
+  <div class="rule"></div>
+  <div class="grid3">
+    <div class="cell"><div class="k">Design-leaning interviewer</div><div class="h">&ldquo;How would you design a bathroom for someone who is blind?&rdquo;</div><div class="p">Practise reasoning from the user's constraint outward, not from the feature inward.</div></div>
+    <div class="cell"><div class="k">Business-leaning interviewer</div><div class="h">&ldquo;Should Udemy move into live learning?&rdquo;</div><div class="p">Practise taking a position, then defending it against the strongest counter-argument.</div></div>
+    <div class="cell"><div class="k">Analytics-leaning interviewer</div><div class="h">&ldquo;How many Teslas are sold in New York in a day?&rdquo;</div><div class="p">Practise estimation out loud. The number is irrelevant. The structure is the answer.</div></div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 34 STRUCTURE OF THE LOOP -->
+<section class="slide">
+  <div class="eyebrow">What most PM and APM loops contain</div>
+  <h2>Six stages, rarely in a different order</h2>
+  <div class="rule"></div>
+  <ol class="steps" style="gap:16px">
+    <li><div><div class="t">Tell me about yourself</div><div class="d">Sell the story. This is the only question you can fully prepare, and most people waste it.</div></div></li>
+    <li><div><div class="t">What is product management, and why are you a fit for it?</div></div></li>
+    <li><div><div class="t">How would you improve our product, or a product of your choice?</div></div></li>
+    <li><div><div class="t">An assignment based on the business</div></div></li>
+    <li><div><div class="t">A technical round, sometimes</div></div></li>
+    <li><div><div class="t">Compensation</div></div></li>
+  </ol>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 35 SELL YOUR STORY -->
+<section class="slide dark">
+  <div class="eyebrow">Stage one, done properly</div>
+  <div class="fill" style="display:flex;flex-direction:column;justify-content:center">
+    <div class="statement">The interviewer wants to interview you if they think they will take something away from the hour.</div>
+    <div class="attrib">Your story is the thing that makes that likely. Build it deliberately.</div>
+  </div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 36 THREE STORY QUESTIONS -->
+<section class="slide">
+  <div class="eyebrow">A good story answers three questions</div>
+  <h2>Problem, place, path</h2>
+  <div class="rule"></div>
+  <ol class="steps">
+    <li><div><div class="t">Why did this problem interest you?</div><div class="d">Say it at the scale you actually think at. Solving payments for 300 million students. Solving learning for a 15 billion dollar economy. Then give it a relatable handle: &ldquo;Stripe for India&rdquo;.</div></div></li>
+    <li><div><div class="t">Why does the place you worked excite you?</div><div class="d">Describe the growth or the business model, not the brand. &ldquo;Shopify for India, at this stage of growth, with this model.&rdquo;</div></div></li>
+    <li><div><div class="t">Why does your path make sense, and why is this switch next?</div><div class="d">If you have moved quickly between jobs, own it with a clear through-line. A short Loom explaining your story works as a visual resume and almost nobody sends one.</div></div></li>
+  </ol>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 37 CATEGORIES -->
+<section class="slide">
+  <div class="eyebrow">Inside the interview</div>
+  <h2>Every question falls into one of seven categories</h2>
+  <div class="rule"></div>
+  <table class="map">
+    <tr><th style="width:44%">Category</th><th>Typically asked as</th></tr>
+    <tr><td>Product sense</td><td>Your favourite product and why. Compare Facebook and Twitter.</td></tr>
+    <tr><td>Product management basics</td><td>What does a PM do. What are the hard parts. How do you prioritise features.</td></tr>
+    <tr><td>Process</td><td>How would you manage a complex launch. How do you handle a difficult team member.</td></tr>
+    <tr><td>Past projects and products</td><td>Why did you choose X over Y. How did you handle that failure.</td></tr>
+    <tr><td>Brain teasers and problem solving</td><td>Estimation and structured reasoning under time pressure.</td></tr>
+    <tr><td>Domain expertise</td><td>How is company X positioned against Y. Name four pain points in our vertical.</td></tr>
+    <tr><td>Understanding of technology</td><td>Explain how the thing you built actually worked.</td></tr>
+  </table>
+  <div class="fill"></div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 38 MAPPING -->
+<section class="slide">
+  <div class="eyebrow">Look familiar?</div>
+  <h2>Every category maps back to the five attributes</h2>
+  <div class="rule"></div>
+  <table class="map">
+    <tr><th style="width:44%">Question category</th><th>Attribute being scored</th></tr>
+    <tr><td>Product sense</td><td>Has product sense</td></tr>
+    <tr><td>Practice of product management</td><td>Has product sense &middot; Is smart</td></tr>
+    <tr><td>Process</td><td>Gets things done</td></tr>
+    <tr><td>Past projects and products</td><td>Gets things done &middot; Is a culture fit</td></tr>
+    <tr><td>Brain teasers and problem solving</td><td>Is smart</td></tr>
+    <tr><td>Domain expertise</td><td>Has technical skills</td></tr>
+    <tr><td>Understanding of technology</td><td>Has technical skills</td></tr>
+  </table>
+  <p class="note" style="margin-top:22px">There are only five things being measured. Prepare against the attributes, not against a list of questions.</p>
+  <div class="fill"></div>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 39 THE LINE -->
+<section class="slide">
+  <div class="eyebrow">On product sense questions</div>
+  <h2>There is a line, and most answers never cross it</h2>
+  <div class="rule"></div>
+  <div class="illostage">
+  <svg class="illo" viewBox="0 0 1104 230" role="img"
+       aria-label="A scale running from obvious through interesting to profound, with a line you must cross sitting between interesting and profound.">
+    <!-- shaded zone beyond the line -->
+    <rect class="sf" x="760" y="24" width="344" height="150" rx="3"/>
+
+    <!-- the axis -->
+    <line class="ln" x1="20" y1="128" x2="1084" y2="128"/>
+
+    <!-- three stops -->
+    <circle class="ln" cx="120" cy="128" r="9"/>
+    <text class="lbl dim" x="78" y="168">Obvious</text>
+    <text class="lbl sm" x="34" y="192">&ldquo;It has a clean UI&rdquo;</text>
+
+    <circle class="ln" cx="480" cy="128" r="9"/>
+    <text class="lbl" x="432" y="168">Interesting</text>
+    <text class="lbl sm" x="360" y="192">&ldquo;Retention is driven by the second session, not the first&rdquo;</text>
+
+    <circle class="hif" cx="900" cy="128" r="11"/>
+    <text class="lblhi" x="856" y="168">Profound</text>
+    <text class="lbl sm" x="790" y="192">the answer they repeat to the panel afterwards</text>
+
+    <!-- the line to cross -->
+    <path class="hi" style="stroke-dasharray:7 7" d="M760 24 V174"/>
+    <text class="lblhi" x="640" y="16">you need to cross this line</text>
+    <path class="hi" d="M690 46 q40 22 66 34"/>
+    <path class="hif" d="M760 84 l-14 -3 l6 -10 z"/>
+
+    <!-- where most answers stop -->
+    <path class="ln faint" d="M120 108 V70 H480 V108"/>
+    <text class="lbl sm" x="212" y="62">where almost every answer stops</text>
+  </svg>
+  </div>
+  <p class="note" style="max-width:80ch;margin-top:6px">
+    You do not need to be profound for the whole hour. You need it once. Pick the product you know most deeply and find the one observation about it that the interviewer has not heard before.</p>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+<!-- 40 CLOSE -->
+<section class="slide">
+  <div class="eyebrow">Take this away</div>
+  <h2>Four things to do this week</h2>
+  <div class="rule"></div>
+  <ol class="steps">
+    <li><div><div class="t">Message eight PMs and ask about the worst parts of the job</div></div></li>
+    <li><div><div class="t">Pick one company and write the pre-interview assignment nobody asked for</div></div></li>
+    <li><div><div class="t">Rewrite your objective and skills sections as verifiable facts</div></div></li>
+    <li><div><div class="t">Publish one piece on how the job is actually done</div></div></li>
+  </ol>
+  <p class="note" style="margin-top:14px">Credibility built before you walk through the door is priceless. Start building it now, not the week the opening appears.</p>
+  <div class="foot"><span class="mark">Rethink <i>Systems.</i></span><span class="num"></span></div>
+</section>
+
+</div></div>
+
+<div id="hud">
+  <span id="count">1 / 40</span>
+  <button id="prev" aria-label="Previous slide">Prev</button>
+  <button id="next" aria-label="Next slide">Next</button>
+  <button id="full" aria-label="Toggle fullscreen">Full screen</button>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  slides.forEach(function(el, k){
+    var n = el.querySelector('.num');
+    if (n) n.textContent = String(k + 1).padStart(2, '0');
+  });
+  var i = 0, stage = document.getElementById('stage');
+
+  function fit(){
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    stage.style.setProperty('--s', s);
+  }
+
+  function show(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(el, k){ el.classList.toggle('on', k === i); });
+    document.getElementById('count').textContent = (i + 1) + ' / ' + slides.length;
+    document.getElementById('bar').style.width =
+      (slides.length > 1 ? (i / (slides.length - 1)) * 100 : 100) + '%';
+    try { location.hash = i + 1; } catch(e){}
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); show(i + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+    else if (e.key === 'f' || e.key === 'F') { toggleFull(); }
+  });
+
+  document.getElementById('next').addEventListener('click', function(){ show(i + 1); });
+  document.getElementById('prev').addEventListener('click', function(){ show(i - 1); });
+  document.getElementById('full').addEventListener('click', toggleFull);
+
+  function toggleFull(){
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+  }
+
+  document.getElementById('deck').addEventListener('click', function(e){
+    if (e.target.closest('#hud')) return;
+    show(i + 1);
+  });
+
+  var hud = document.getElementById('hud'), hideT;
+  function pokeHud(){
+    hud.classList.add('show');
+    clearTimeout(hideT);
+    hideT = setTimeout(function(){ hud.classList.remove('show'); }, 2500);
+  }
+  document.addEventListener('mousemove', pokeHud);
+  document.addEventListener('keydown', pokeHud);
+  pokeHud();
+
+  window.addEventListener('resize', fit);
+  fit();
+  var start = parseInt((location.hash || '').replace('#',''), 10);
+  show(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>
