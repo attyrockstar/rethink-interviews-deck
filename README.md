@@ -1,70 +1,43 @@
 # Approaching Interviews and Solving Case Studies
 
-A 65-slide deck for the Rethink Systems MPM cohort, Session 03, with
-Shravan Tickoo. Self-contained single HTML file, no build step needed to
-present. Live at https://attyrockstar.github.io/rethink-interviews-deck/
+Rethink Systems, Mastering Product Management, Session 03, with Shravan
+Tickoo. A scroll-down page: 27 full-screen frames that snap into place on
+a laptop and read as a long page on a phone.
 
-## What is in it
-
-Six parts: what hiring managers score, getting PM experience before the
-title, the pre-interview assignment, the resume, research and the
-interview, and the choice between offers. The 2026 India figures (PM
-openings, salaries, MBA fees, referral rates, Groww and edtech numbers)
-are sourced on the last slide and stamped "as of September 2026".
+Live: https://attyrockstar.github.io/rethink-interviews-deck/
 
 ## Presenting
 
-- `F` toggles full screen
-- Right arrow, space, click or swipe advances; left arrow goes back
-- `Home` and `End` jump to the first and last slide
-- The slide number is in the URL: `.../rethink-interviews-deck/#24`
-- On-screen controls fade after a couple of seconds
+- Scroll, or use the arrow keys, space and page up/down to step frame by frame
+- The numbers on the left jump to each of the six parts
+- The door on the first screen opens as you scroll
+- Every India figure is stamped September 2026; sources are in the
+  expandable list on the last content frame
 
 ## Editing
 
-The deck is assembled from `src/*.html` by `src/build.py`. Edit the part
-files, then:
+The page is assembled from `src2/*.html` by `src2/build.py`:
 
 ```bash
-python3 src/build.py
+python3 src2/build.py
 ```
 
-That rewrites `index.html`. The three dialogue comics, the 100-dot grid
-and the 90-second timeline are generated in `build.py` from data, so
-change the lines there rather than in the SVG.
-
-To refresh a figure, change it on its slide and on the sources slide
-(`src/40-choice.html`, last table).
+That rewrites `index.html`. The receipt's torn edge, the 100-dot waffle,
+the seven-to-five mapping diagram and the 90-second timeline are generated
+in `build.py` from data. Everything else is hand-authored in the part files.
 
 ## Brand
 
-Palette and type are lifted from rethinksystems.in. Edit the `:root`
-block at the top of `src/00-head.html`:
-
-```css
-:root{
-  --ink:       #01061B;   /* Rethink navy: dark slides, body text on light */
-  --paper:     #F3F6FF;   /* light slide background                        */
-  --accent:    #3D5BF1;   /* Rethink blue on light slides                  */
-  --accent-dk: #84ADFF;   /* Rethink blue on navy slides                   */
-  --strong:    #0E7A55;   /* the "do this" colour                          */
-  --weak:      #B93A22;   /* the "not this" colour                         */
-}
-```
-
-Figtree loads from Google Fonts. With no internet the deck falls back to
-system sans and still holds its layout.
+Palette from rethinksystems.in, in the `:root` block at the top of
+`src2/00-head.html`. Tanker (Fontshare) carries headlines and numbers,
+Figtree (the site's face) carries everything else.
 
 ## Deploying
 
 GitHub Pages serves `main` from the repo root. Push and it updates in
 about a minute.
 
-```bash
-git add -A && git commit -m "..." && git push
-```
+## Artwork
 
-## Illustrations
-
-All comics and diagrams are original inline SVG. No image files, no
-third-party artwork, so the repo is safe to keep public.
+All artifacts (scorecard, resumes, profile card, chats, receipt, diagrams)
+are HTML and inline SVG. No image files, no third-party artwork.
